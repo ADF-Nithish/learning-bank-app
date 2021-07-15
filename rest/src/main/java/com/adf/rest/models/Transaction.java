@@ -3,20 +3,29 @@ package com.adf.rest.models;
 import java.time.LocalDateTime;
 
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+
+import com.fasterxml.jackson.annotation.JsonBackReference;
 
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 @Entity
 public class Transaction {
+    
+    @JsonBackReference
     @ManyToOne
+    @JoinColumn(name="AccountNumber")
     private BankAccount account;
     @Id
+    @GeneratedValue(strategy=GenerationType.SEQUENCE)
     private Long TransactionId;
-    private Double TransactionAmount;
-    private String TransactionType;
+    private Double OldBalance;
+    private Double NewBalance;
     @CreationTimestamp
     private LocalDateTime TransactionDate;
     private String TransactionStatus;
@@ -24,7 +33,33 @@ public class Transaction {
     private LocalDateTime CreatedAt;
     @UpdateTimestamp
     private LocalDateTime UpdatedAt;
+    private Double amount;
+    private String type;
+    public Double getAmount() {
+        return amount;
+    }
+    public void setAmount(Double amount) {
+        this.amount = amount;
+    }
+    public String getType() {
+        return type;
+    }
+    public void setType(String type) {
+        this.type = type;
+    }
     
+    public Double getOldBalance() {
+        return OldBalance;
+    }
+    public void setOldBalance(Double oldBalance) {
+        OldBalance = oldBalance;
+    }
+    public Double getNewBalance() {
+        return NewBalance;
+    }
+    public void setNewBalance(Double newBalance) {
+        NewBalance = newBalance;
+    }
     public BankAccount getAccount() {
         return account;
     }
@@ -37,18 +72,7 @@ public class Transaction {
     public void setTransactionId(Long transactionId) {
         TransactionId = transactionId;
     }
-    public Double getTransactionAmount() {
-        return TransactionAmount;
-    }
-    public void setTransactionAmount(Double transactionAmount) {
-        TransactionAmount = transactionAmount;
-    }
-    public String getTransactionType() {
-        return TransactionType;
-    }
-    public void setTransactionType(String transactionType) {
-        TransactionType = transactionType;
-    }
+    
     public LocalDateTime getTransactionDate() {
         return TransactionDate;
     }

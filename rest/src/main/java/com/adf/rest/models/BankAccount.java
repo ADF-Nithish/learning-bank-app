@@ -5,7 +5,9 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
@@ -23,7 +25,7 @@ public class BankAccount {
     private String AccountType;
     private Double Balance = 0.0;
     private Double TransactionFee = 0.0;
-    @OneToMany(mappedBy = "account")
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY,mappedBy = "account")
     private List<Transaction> transactions = new ArrayList<>();
     @CreationTimestamp
     private LocalDateTime CreatedAt;
