@@ -25,6 +25,7 @@ public class BankAccount {
     private String AccountType;
     private Double Balance = 0.0;
     private Double TransactionFee = 0.0;
+   
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY,mappedBy = "account")
     private List<Transaction> transactions = new ArrayList<>();
     @CreationTimestamp

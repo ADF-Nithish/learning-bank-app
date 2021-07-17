@@ -1,5 +1,6 @@
 package com.adf.rest.models;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 import javax.persistence.Entity;
@@ -27,7 +28,7 @@ public class Transaction {
     private Double OldBalance;
     private Double NewBalance;
     @CreationTimestamp
-    private LocalDateTime TransactionDate;
+    private LocalDate TransactionDate;
     private String TransactionStatus;
     @CreationTimestamp
     private LocalDateTime CreatedAt;
@@ -73,10 +74,10 @@ public class Transaction {
         TransactionId = transactionId;
     }
     
-    public LocalDateTime getTransactionDate() {
+    public LocalDate getTransactionDate() {
         return TransactionDate;
     }
-    public void setTransactionDate(LocalDateTime transactionDate) {
+    public void setTransactionDate(LocalDate transactionDate) {
         TransactionDate = transactionDate;
     }
     public String getTransactionStatus() {

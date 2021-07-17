@@ -8,6 +8,9 @@ class RestApplicationTests {
 
 	@Test
 	void contextLoads() {
+		/*
+		Empty Test
+		*/
 	}
 
 }
