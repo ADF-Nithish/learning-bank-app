@@ -2,13 +2,10 @@ package com.adf.rest.controller;
 
 import java.time.LocalDate;
 import java.time.Period;
-import java.util.LinkedHashMap;
 import java.util.Locale;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 import javax.persistence.EntityManager;
-import javax.transaction.Transactional;
 
 import com.adf.rest.dao.BankDao;
 import com.adf.rest.dao.TransactDao;
@@ -17,6 +14,7 @@ import com.adf.rest.exceptions.CustomNotFound;
 import com.adf.rest.models.BankAccount;
 import com.adf.rest.models.Transaction;
 import com.adf.rest.request.CreateRequest;
+import com.adf.rest.response.GetFrom;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -62,10 +60,8 @@ public class BankController {
         if ("current".equals(obj.getAccountType().toLowerCase(Locale.getDefault()))){
             objAcc.setTransactionFee(5.0);
         }
-        entityManager.getTransaction().begin();
-        entityManager.persist(objAcc);
-        long accNo = objAcc.getAccountNumber();
-        
+        dao.save(objAcc);
+
         if (obj.getInitialDeposit() != 0.0){
             
             Transaction tacc = new Transaction();
@@ -73,7 +69,7 @@ public class BankController {
             tacc.setType("Deposit");
             LOGGER.info("Transaction Successfully Completed");
             tacc.setTransactionStatus("Success");
-            tdao.save(t.transact(accNo, tacc));
+            tdao.save(t.transact(objAcc.getAccountNumber(), tacc));
             
             objAcc.setTransaction(tdao.findByAccount(tacc.getAccount()));
             dao.save(objAcc);
@@ -81,28 +77,32 @@ public class BankController {
         
         return objAcc;
     }
-    @GetMapping(path = "/getFromTo/{accountNo}", produces = { "application/json" })
-    public Map<String, Object> accountStatement(@PathVariable Long accountNo, @RequestParam("fromDate") String fromDate,@RequestParam("toDate") String toDate) {
-        if (!dao.existsById(accountNo)){
+    @GetMapping(path = "getFromTo/{accountNumber}", produces = { "application/json" })
+    public GetFrom accountStatement(@PathVariable Long accountNumber, @RequestParam("fromDate") String fromDate,
+                            @RequestParam("toDate") String toDate) {
+        System.out.println("Came");
+        if (!dao.existsById(accountNumber)){
             LOGGER.error("Account Not Found");
             throw new CustomNotFound("Account Not Found");
         }
         else
         {
-            BankAccount objB = dao.getById(accountNo);
-            Map<String, Object> map = new LinkedHashMap<>();
-            map.put("account_number", accountNo);
-            map.put("account_holder_name", objB.getAccountHolderName());
-            map.put("dob", objB.getDateofBirth());
-            map.put("account_type", objB.getAccountType());
-            map.put("from_date", fromDate);
-            map.put("to_date", toDate);
-            map.put("transactions", dao.getById(accountNo).getTransaction().stream()
-            .filter(a -> Period.between(LocalDate.parse(fromDate), a.getTransactionDate()).getDays() >= 0
+            System.out.println("Came");
+            BankAccount objB = dao.getById(accountNumber);
+            GetFrom getFrom = new GetFrom();
+            getFrom.setAccountNumber(accountNumber);
+            getFrom.setAccountName(objB.getAccountHolderName());
+            getFrom.setBalance(objB.getBalance());
+            getFrom.setDob(objB.getDateofBirth());
+            getFrom.setAccountType(objB.getAccountType());
+            getFrom.setFromDate(fromDate);
+            getFrom.setToDate(toDate);
+            getFrom.setTransactions( dao.getById(accountNumber).getTransaction().stream()
+                    .filter(a -> Period.between(LocalDate.parse(fromDate), a.getTransactionDate()).getDays() >= 0
                         && Period.between(LocalDate.parse(toDate), a.getTransactionDate()).getDays() <= 0)
-            .collect(Collectors.toList()));
+                    .collect(Collectors.toList()));
 
-            return map;
+            return getFrom;
     }
     }
    
